@@ -3,12 +3,19 @@
 Mingw extension libs for compiling rubinius.
 
 
+== Why
+
+POSIX functions are heavily used in rubinius, but many of them are not implemented under mingw.
+
+
 == Usage
 
-<b>Under msys console:</b>
+<b>Under MSYS console:</b>
 
     rake
-    rake test
+
+Then the instructions and env settings are shown.
+<b>NOTE:</b> even with these headers you can not get rubinius compiled by mingw, I am still trying to make a very big patch ...
 
 <b>See more tasks</b>
 
