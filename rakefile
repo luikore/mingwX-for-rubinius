@@ -3,6 +3,7 @@ if RUBY_PLATFORM !~ /mingw|mswin/
   exit
 end
 
+require "open-uri"
 require "fileutils"
 include FileUtils
 
@@ -35,12 +36,17 @@ end
 
 desc "remove build"
 task :clean do
+  sh "rm -f *.lzma"
+  sh "rm -f *.gz"
+  sh "rm -f *.bz2"
+  sh "rm -f *.7z"
+  sh "rm -f *.tar"
   sh "rm -f #{$target}"
   sh "rm -f test/dll.dll test/dlfcn.exe test/headers.c test/headers.dll"
 end
 
 desc "build and show env vars"
-task :env => :build do
+task :env => [:build, :download] do
   puts ''
   puts '                     >>= Done =<<'
   puts ''
@@ -53,6 +59,38 @@ task :env => :build do
   puts "export C_INCLUDE_PATH=#{File.expand_path 'include'}"
   puts "export CPLUS_INCLUDE_PATH=#{File.expand_path 'include'}"
   puts "export LIBRARY_PATH=#{File.expand_path 'lib'}"
+end
+
+def download url
+  filename = File.basename(url)
+
+  unless File.exist?(filename)
+    puts "fetching #{url}"
+    data = open(url, 'rb')do |f|
+      f.read
+    end
+    File.open filename, 'wb' do |f|
+      f << data
+    end
+  end
+
+  puts "unpacking #{filename}"
+  if filename.end_with?('lzma')
+    system "lzma -d -c #{filename} | tar -x"
+  elsif filename.end_with?('gz')
+    system "gzip -d -c #{filename} | tar -x"
+  end
+end
+
+desc "download zlib and openssl"
+task :download do
+  unless File.exist?('lib/libz.a')
+    download 'http://downloads.sourceforge.net/project/mingw/MinGW%20zlib/zlib-1.2.3-1-mingw32/libz-1.2.3-1-mingw32-dev.tar.gz'
+  end
+
+  unless File.exist?('lib/libssl.a')
+    download 'http://downloads.sourceforge.net/project/mingw/MSYS%20openssl/openssl-0.9.8k-1/libopenssl-0.9.8k-1-msys-1.0.11-dev.tar.lzma'
+  end
 end
 
 desc "test"
