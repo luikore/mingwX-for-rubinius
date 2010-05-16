@@ -1,45 +1,51 @@
 == mingwX
 
-Mingw extension libs for compiling rubinius
+Mingw extension libs for compiling rubinius.
 
 
 == Usage
 
+<b>Under msys console:</b>
+
     rake
     rake test
 
+<b>See more tasks</b>
+
+    rake -T
 
 == References
 
-setting mingw env include and lib reference:
+<b>setting mingw env include and lib reference:</b>
 
 http://pure-lang.googlecode.com/svn/wiki/INSTALL-MinGW.txt
 
 
-dlfcn from google code, with a little change:
+<b>dlfcn from google code, with a little change: (with some changes for C/C++ compatibility)</b>
 
 http://code.google.com/p/dlfcn-win32
 
 
-zlib and openssl:
+<b>zlib and openssl: (auto download and unpack)</b>
 
-http://sourceforge.net/projects/mingw/files/
+http://sourceforge.net/projects/mingw/files
 
 
-mmap from git:
+<b>mmap from git: (modified for memory alloc and more flags detection)</b>
 
 http://www.sfr-fresh.com/unix/misc/git-1.7.0.6.tar.gz:a/git-1.7.0.6/compat/win32mmap.c
 
 
-interix porting dictionary:
+<b>interix porting dictionary: (working on signals!)</b>
 
 http://www.interopcommunity.com/dictionary/index.php
 
 
-other references:
+<b>other references:</b>
 
 perl's win32.c
 
 gnuwin32 src io and winx/mslowiox.h (note: the gnuwin32's signals are totally fake)
 
 cygwin source
+
