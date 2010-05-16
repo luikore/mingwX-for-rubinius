@@ -92,6 +92,6 @@ int main()
     ret = dlclose( global );
 	assert (!ret, "Could not close global handle: %s\n");
 
-	printf("dlfcn test succeeded.\n");
+	printf("dlfcn test succeeded\n");
     return 0;
 }

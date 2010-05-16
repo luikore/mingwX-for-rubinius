@@ -21,6 +21,6 @@
 
 int function( void )
 {
-    printf( "Hello, world!\n" );
+    printf( "" );
     return 0;
 }

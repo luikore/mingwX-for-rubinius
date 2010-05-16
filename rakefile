@@ -23,7 +23,7 @@ task :build do
     target = "lib/#{(File.basename f).sub(/c$/, 'o')}"
     sh "gcc -c #{f} #{$flags} -o #{target}"
   end
-  sh "g++ -c src/mman.cpp #{$flags} -o lib/mman.o -std=c++0x"
+  sh "g++ -c src/mman.cpp #{$flags} -o lib/mman.o"
 
   # archive
   files = Dir.glob("lib/*o").join ' '
@@ -34,15 +34,19 @@ task :build do
   sh 'rm -f lib/*.o'
 end
 
-desc "remove build"
+desc "remove build files"
 task :clean do
   sh "rm -f *.lzma"
   sh "rm -f *.gz"
   sh "rm -f *.bz2"
   sh "rm -f *.7z"
   sh "rm -f *.tar"
-  sh "rm -f #{$target}"
   sh "rm -f test/dll.dll test/dlfcn.exe test/headers.c test/headers.dll"
+end
+
+desc "remove all"
+task :clean_all => :clean do
+  sh "rm -f #{$target}"  
 end
 
 desc "build and show env vars"
@@ -54,7 +58,7 @@ task :env => [:build, :download] do
        BEFORE compiling rubinius and
        AFTER compiling llvm"
   puts ''
-  puts "Copy and paste in the mingw console when you are ready:"
+  puts "Paste the following commands to MSYS console when external_libs are compiled:"
   puts ''
   puts "export C_INCLUDE_PATH=#{File.expand_path 'include'}"
   puts "export CPLUS_INCLUDE_PATH=#{File.expand_path 'include'}"
@@ -104,7 +108,7 @@ task :test => [:build, :test_header] do
   system 'dlfcn.exe'
 
   # mmap
-  system "g++ mmap.c #{flags} -o mmap.exe -std=c++0x"
+  system "g++ mmap.c #{flags} -o mmap.exe"
   system 'mmap.exe'
 
   cd '..'
@@ -112,9 +116,9 @@ end
 
 desc "include all headers to see if there is syntax error"
 task :test_header do
-  heads = []
-  Dir.glob 'include/**/*.h' do |f|
-    heads << "#include <#{f.sub /^include\//, ''}>"
+  heads = Dir.glob('include/**/*.h') - Dir.glob('include/openssl/**/*.h')
+  heads.map! do |f|
+    "#include <#{f.sub /^include\//, ''}>"
   end
   File.open 'test/headers.c', 'w' do |out|
     out << heads.join("\n")

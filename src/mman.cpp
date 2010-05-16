@@ -4,12 +4,12 @@
 #include <windows.h>
 #include <memory.h>
 
-#include <unordered_map>
+#include <map>
 
 typedef unsigned long long uint64_t;
 typedef unsigned long uint32_t;
 
-typedef std::unordered_map<void*, int> MallocMap;
+typedef std::map<void*, int> MallocMap;
 static MallocMap malloc_map;
 
 #ifdef DEBUG

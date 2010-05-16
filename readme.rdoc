@@ -28,7 +28,7 @@ Then the instructions and env settings are shown.
 http://pure-lang.googlecode.com/svn/wiki/INSTALL-MinGW.txt
 
 
-<b>dlfcn from google code, with a little change: (with some changes for C/C++ compatibility)</b>
+<b>dlfcn from google code: (with a patch, little bug fix for the patch, and some fix for C/C++ compatibility)</b>
 
 http://code.google.com/p/dlfcn-win32
 
