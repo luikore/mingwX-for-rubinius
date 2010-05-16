@@ -28,24 +28,7 @@ void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset
 	uint32_t h = (o >> 32) & 0xFFFFFFFF;
 	int win_prot = 0;
 
-	// pure memory allocation
-	if (fd == -1) {
-		void* ptr = malloc(length);
-		malloc_map.insert(MallocMap::value_type(ptr, 1));
-		return ptr;
-	}
-
-	if (!fstat(fd, &st)) {
-		len = st.st_size;
-	} else {
-		die("mmap: failed to get fstat\n");
-	}
-
-	if ((length + offset) > len) {
-		length = (size_t)(len - offset);
-	}
-
-	// deal with protection mode
+	// determine protection mode
 #	define CASE break;case 
 #	define wp(p) win_prot = PAGE_##p 
 	switch (prot) {
@@ -65,8 +48,33 @@ void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset
 	if (! win_prot) {
 		die("mmap: flag not supported\n");
 	}
+#	undef CASE
+#	undef wp
 
 	// TODO flags
+
+	// pure memory allocation
+	// use VirtualAlloc for vista/win7 execution ability
+	if (fd == -1) {
+		void* ptr = VirtualAlloc(NULL, length, MEM_COMMIT, win_prot);
+		if (ptr) {
+			malloc_map.insert(MallocMap::value_type(ptr, 1));
+			return ptr;
+		} else {
+			die("mmap: failed in virtual alloc");
+		}
+	}
+
+	if (!fstat(fd, &st)) {
+		len = st.st_size;
+	} else {
+		die("mmap: failed to get fstat\n");
+	}
+
+	if ((length + offset) > len) {
+		length = (size_t)(len - offset);
+	}
+
 
 	hmap = CreateFileMapping((void*)_get_osfhandle(fd), 0, win_prot, 0, 0, 0);
 	if (!hmap) {
@@ -83,10 +91,9 @@ void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset
 
 int munmap(void *start, size_t len) {
 	if (malloc_map.erase(start)) {
-		free(start);
-		return 0;
+		return VirtualFree(start, len, MEM_RELEASE) ? 0 : -1;
 	} else {
-		return !UnmapViewOfFile(start);
+		return UnmapViewOfFile(start) ? 0 : -1;
 	}
 }
 
