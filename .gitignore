@@ -1,0 +1,7 @@
+include/zconf\.h
+include/zlib\.h
+include/openssl
+lib
+test/.+\.dll
+test/.+\.o
+test/.+\.exe

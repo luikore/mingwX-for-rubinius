@@ -1,0 +1,86 @@
+if RUBY_PLATFORM !~ /mingw|mswin/
+  puts 'Windows only. No need to reimplement these functions for posix systems.'
+  exit
+end
+
+require "fileutils"
+include FileUtils
+
+# config
+$flags = "-Iinclude -Isrc -O3 -Wall"
+$target = 'lib/libmingwX.a'
+
+desc "build and show"
+task :default => :env
+
+desc 'build libmingwX.a'
+task :build do
+  next if File.exist?($target)
+
+  # compile
+  Dir.glob "src/*.c" do |f|
+    target = "lib/#{(File.basename f).sub(/c$/, 'o')}"
+    sh "gcc -c #{f} #{$flags} -o #{target}"
+  end
+  sh "g++ -c src/mman.cpp #{$flags} -o lib/mman.o -std=c++0x"
+
+  # archive
+  files = Dir.glob("lib/*o").join ' '
+  sh "ar r #{$target} #{files}"
+  sh "ranlib #{$target}"
+
+  # clean obj
+  sh 'rm -f lib/*.o'
+end
+
+desc "remove build"
+task :clean do
+  sh "rm -f #{$target}"
+  sh "rm -f test/dll.dll test/dlfcn.exe test/headers.c test/headers.dll"
+end
+
+desc "build and show env vars"
+task :env => :build do
+  puts ''
+  puts '                     >>= Done =<<'
+  puts ''
+  puts "Should MANUALLY set environment variables
+       BEFORE compiling rubinius and
+       AFTER compiling llvm"
+  puts ''
+  puts "Copy and paste in the mingw console when you are ready:"
+  puts ''
+  puts "export C_INCLUDE_PATH=#{File.expand_path 'include'}"
+  puts "export CPLUS_INCLUDE_PATH=#{File.expand_path 'include'}"
+  puts "export LIBRARY_PATH=#{File.expand_path 'lib'}"
+end
+
+desc "test"
+task :test => [:build, :test_header] do
+  flags = '-I../include -L../lib -lmingwX'
+  cd 'test'
+
+  # dlfcn
+  system 'gcc dll.c -I../include -shared -o dll.dll'
+  system "g++ dlfcn.cpp #{flags} -o dlfcn.exe"
+  system 'dlfcn.exe'
+
+  # mmap
+  system "g++ mmap.c #{flags} -o mmap.exe -std=c++0x"
+  system 'mmap.exe'
+
+  cd '..'
+end
+
+desc "include all headers to see if there is syntax error"
+task :test_header do
+  heads = []
+  Dir.glob 'include/**/*.h' do |f|
+    heads << "#include <#{f.sub /^include\//, ''}>"
+  end
+  File.open 'test/headers.c', 'w' do |out|
+    out << heads.join("\n")
+  end
+  system 'gcc test/headers.c -Iinclude -shared -o test/headers.dll'
+  puts 'header test succeeded'
+end

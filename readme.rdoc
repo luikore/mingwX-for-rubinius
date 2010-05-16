@@ -1,0 +1,21 @@
+Mingw extension libs for compiling rubinius
+
+setting mingw env include and lib reference:
+http://pure-lang.googlecode.com/svn/wiki/INSTALL-MinGW.txt
+
+dlfcn from google code, with a little change:
+http://code.google.com/p/dlfcn-win32
+
+zlib and openssl:
+http://sourceforge.net/projects/mingw/files/
+
+mmap from git:
+http://www.sfr-fresh.com/unix/misc/git-1.7.0.6.tar.gz:a/git-1.7.0.6/compat/win32mmap.c
+
+interix porting dictionary:
+http://www.interopcommunity.com/dictionary/index.php
+
+other references:
+perl's win32.c
+gnuwin32 src io and winx/mslowiox.h (note: the gnuwin32's signals are totally fake)
+cygwin source
