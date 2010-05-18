@@ -1,7 +1,12 @@
-ÐÞ¸Ä
+modified:
+
 signal.h
 fcntl.h
 time.h
+setjmp.h
+unistd.h
+sys/stat.h
 
-¸´ÖÆ
+modified and copied:
+
 crypt.h

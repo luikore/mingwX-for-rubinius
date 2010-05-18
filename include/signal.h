@@ -1,36 +1,8 @@
-/* 
- * signal.h
- * This file has no copyright assigned and is placed in the Public Domain.
- * This file is a part of the mingw-runtime package.
- * No warranty is given; refer to the file DISCLAIMER within the package.
- *
- * A way to set handlers for exceptional conditions (also known as signals).
- *
- */
-
 #ifndef	_SIGNAL_H_
 #define	_SIGNAL_H_
 
-/* All the headers include this file. */
 #include <_mingw.h>
 #include <sys/types.h>
-
-/*
- * The actual signal values. Using other values with signal
- * produces a SIG_ERR return value.
- *
- * NOTE: SIGINT is produced when the user presses Ctrl-C.
- *       SIGILL has not been tested.
- *       SIGFPE doesn't seem to work?
- *       SIGSEGV does not catch writing to a NULL pointer (that shuts down
- *               your app; can you say "segmentation violation core dump"?).
- *       SIGTERM comes from what kind of termination request exactly?
- *       SIGBREAK is indeed produced by pressing Ctrl-Break.
- *       SIGABRT is produced by calling abort.
- * TODO: The above results may be related to not installing an appropriate
- *       structured exception handling frame. Results may be better if I ever
- *       manage to get the SEH stuff down.
- */
 
 /* Historic */
 #define SIGHUP	1
@@ -68,20 +40,16 @@
 #define SIGXFSZ	31
 #define SIGCANCEL 32
 
+/* sig count */
+#define NSIG 32
+
 #ifndef _SIG_ATOMIC_T_DEFINED
 typedef int sig_atomic_t;
 #define _SIG_ATOMIC_T_DEFINED
 #endif
 
 /*
- * The prototypes (below) are the easy part. The hard part is figuring
- * out what signals are available and what numbers they are assigned
- * along with appropriate values of SIG_DFL and SIG_IGN.
- */
-
-/*
- * A pointer to a signal handler function. A signal handler takes a
- * single int, which is the signal it handles.
+ * Pointer to signal handler function.
  */
 typedef	void (*__p_sig_fn_t)(int);
 
@@ -109,57 +77,39 @@ typedef struct {
     int    ss_flags;
 } stack_t;
 
-/* sig count + 1 */
-#define NSIG 33    
-#define	MASK(signo)	(1 << ((signo) - 1))
-
-static int sigfillset(sigset_t *a) {
-	*a = ~0;
-	return 0;
-}
-static int sigaddset(sigset_t *a, int signo) {
-	if (signo > NSIG - 1) {
-		return -1;
-	}
-	*a |= MASK(signo);
-	return 0;
-}
-static int sigemptyset(sigset_t *a) {
-	*a = 0;
-	return 0;
-}
-
-/* stubs */
-static int pthread_sigmask(int a, const sigset_t *b, sigset_t *c) {
-	return -1;
-}
-static int sigaction(int a, const struct sigaction *b, struct sigaction *c) {
-	return -1;
-}
-static int sigprocmask(int how, const sigset_t *b, sigset_t *c) {
-	return -1;
-}
-
-#ifdef	__cplusplus
+#ifdef __cplusplus
 extern "C" {
 #endif
 
-/*
- * Call signal to set the signal handler for signal sig to the
- * function pointed to by handler. Returns a pointer to the
- * previous handler, or SIG_ERR if an error occurs. Initially
- * unhandled signals defined above will return SIG_DFL.
- */
-_CRTIMP __p_sig_fn_t __cdecl __MINGW_NOTHROW signal(int, __p_sig_fn_t);
+extern int sigfillset(sigset_t *);
+extern int sigaddset(sigset_t *, int);
+extern int sigdelset(sigset_t *, int);
+extern int sigemptyset(sigset_t *);
+extern int sigismember(sigset_t *, int);
 
-/*
- * Raise the signal indicated by sig. Returns non-zero on success.
- */
-_CRTIMP int __cdecl __MINGW_NOTHROW	raise (int);
+extern int sigaction(int, const struct sigaction *, struct sigaction *);
 
-#ifdef	__cplusplus
+extern int kill(pid_t, int);
+
+/* sigprocmask how */
+#define SIG_BLOCK	1
+#define SIG_SETMASK	2
+#define SIG_UNBLOCK	3
+extern int sigprocmask(int, const sigset_t *, sigset_t *);
+#define pthread_sigmask sigprocmask
+
+#ifdef SIGNAL_NOT_DEPRECATED
+/* signal() may be deprecated in POSIX 2008 */
+extern __p_sig_fn_t __cdecl mingwx_signal(int, __p_sig_fn_t);
+#define signal mingwx_signal
+#endif
+
+/* impl by msvcrt */
+_CRTIMP int __cdecl __MINGW_NOTHROW	raise(int);
+
+#ifdef __cplusplus
 }
 #endif
 
-#endif	/* Not _SIGNAL_H_ */
+#endif	/* _SIGNAL_H_ */
 

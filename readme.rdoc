@@ -28,7 +28,7 @@ Then the instructions and env settings are shown.
 http://pure-lang.googlecode.com/svn/wiki/INSTALL-MinGW.txt
 
 
-<b>dlfcn from google code: (with a patch, little bug fix for the patch, and some fix for C/C++ compatibility)</b>
+<b>dlfcn from google code: (with a patch, little bug fix for the patch and C++ compatibility)</b>
 
 http://code.google.com/p/dlfcn-win32
 
@@ -43,16 +43,16 @@ http://sourceforge.net/projects/mingw/files
 http://www.sfr-fresh.com/unix/misc/git-1.7.0.6.tar.gz:a/git-1.7.0.6/compat/win32mmap.c
 
 
-<b>interix porting dictionary: (working on signals!)</b>
+<b>Interix porting dictionary:</b>
 
 http://www.interopcommunity.com/dictionary/index.php
 
 
-<b>other references:</b>
+<b>Windows-Unix API comparison:</b>
 
-perl's win32.c
+http://blogs.msdn.com/csliu/archive/2009/03/20/windows-unix-and-ansi-c-api-comparison.aspx
 
-gnuwin32 src io and winx/mslowiox.h (note: the gnuwin32's signals are totally fake)
 
-cygwin source
+<b>POSIX.1-2008 :</b>
 
+http://www.opengroup.org/onlinepubs/9699919799/toc.htm

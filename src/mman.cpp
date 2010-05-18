@@ -18,7 +18,9 @@ static MallocMap malloc_map;
 #define die(x)  
 #endif
 
-void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset) {
+extern "C" {
+
+void* __cdecl mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset) {
 	HANDLE hmap;
 	void *temp;
 	size_t len = 0;
@@ -89,7 +91,7 @@ void *mmap(void *start, size_t length, int prot, int flags, int fd, off_t offset
 	return temp ? temp : MAP_FAILED;
 }
 
-int munmap(void *start, size_t len) {
+int __cdecl munmap(void *start, size_t len) {
 	if (malloc_map.erase(start)) {
 		return VirtualFree(start, len, MEM_RELEASE) ? 0 : -1;
 	} else {
@@ -97,3 +99,4 @@ int munmap(void *start, size_t len) {
 	}
 }
 
+}

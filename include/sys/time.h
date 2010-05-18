@@ -1,10 +1,6 @@
 #ifndef _SYS_TIME_H_
 #define _SYS_TIME_H_
 
-#ifdef	__cplusplus
-extern "C" {
-#endif
-
 #include <_mingw.h>
 #include <stddef.h>
 /* don't include <time.h> */
@@ -26,11 +22,14 @@ struct timeval {
 /* Provided for compatibility with code that assumes that
    the presence of gettimeofday function implies a definition
    of struct timezone. */
-struct timezone
-{
+struct timezone {
   int tz_minuteswest; /* of Greenwich */
   int tz_dsttime;     /* type of dst correction to apply */
 };
+
+#ifdef	__cplusplus
+extern "C" {
+#endif
 
 extern void __cdecl timeradd(struct timeval *a, struct timeval *b, struct timeval *res);
 extern void __cdecl timersub(struct timeval *a, struct timeval *b, struct timeval *res);
