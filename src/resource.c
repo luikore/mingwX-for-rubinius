@@ -17,7 +17,8 @@ int getrlimit (int rltype, struct rlimit *rlimitp) {
 		}
 		rlimitp->rlim_cur = (char*)mi.BaseAddress - (char*)mi.AllocationBase;
 		// TODO actual stack size
-		rlimitp->rlim_max = 6L * 1000L * 1000L * 1000L;
+		rlimitp->rlim_max = (6L * 1000L);
+		rlimitp->rlim_max *= (1000L * 1000L);
 	} else if (rltype == RLIMIT_NOFILE) {
 		// TODO actual file limit
 		rlimitp->rlim_cur = 5;

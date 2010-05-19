@@ -36,7 +36,7 @@ _CRTIMP int __cdecl __MINGW_NOTHROW _setjmp (jmp_buf);
 _CRTIMP void __cdecl __MINGW_NOTHROW longjmp (jmp_buf, int) __MINGW_ATTRIB_NORETURN;
 
 /* WTF: rubinius use _longjmp */
-#define _longjmp(x) longjmp(x)
+#define _longjmp longjmp
 
 #ifdef __cplusplus
 }

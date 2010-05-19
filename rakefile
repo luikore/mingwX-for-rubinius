@@ -8,7 +8,8 @@ require "fileutils"
 include FileUtils
 
 # config
-$flags = "-Iinclude -Isrc -O3 -Wall"
+# fpic: position independent code, for shared lib. (fPIC is larger but cross platform)
+$flags = "-Iinclude -Isrc -O3 -Wall -fpic"
 $target = 'lib/libmingwX.a'
 
 desc "build and show"
@@ -26,9 +27,11 @@ task :build do
   sh "g++ -c src/mman.cpp #{$flags} -o lib/mman.o"
 
   # archive
-  files = Dir.glob("lib/*o").join ' '
+  files = (Dir.glob("lib/*o") - ['dlfcn.o']).join ' '
   sh "ar r #{$target} #{files}"
   sh "ranlib #{$target}"
+  sh "ar r lib/libdl.a lib/dlfcn.o"
+  sh "ranlib lib/libdl.a"
 
   # clean obj
   sh 'rm -f lib/*.o'
@@ -47,6 +50,7 @@ end
 desc "remove all"
 task :clean_all => :clean do
   sh "rm -f #{$target}"  
+  sh "rm -f lib/libdl.a"
 end
 
 desc "build and show env vars"

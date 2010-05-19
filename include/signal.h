@@ -98,6 +98,7 @@ extern int kill(pid_t, int);
 extern int sigprocmask(int, const sigset_t *, sigset_t *);
 #define pthread_sigmask sigprocmask
 
+#define SIGNAL_NOT_DEPRECATED
 #ifdef SIGNAL_NOT_DEPRECATED
 /* signal() may be deprecated in POSIX 2008 */
 extern __p_sig_fn_t __cdecl mingwx_signal(int, __p_sig_fn_t);

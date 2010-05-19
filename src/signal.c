@@ -169,9 +169,10 @@ int kill(pid_t pid, int sig) {
 		errno = ESRCH;
 		return -1;
 	} else {
-		if (! TerminatedProcess(h, 0)) {
+		if (! TerminateProcess(h, 0)) {
 			return -1;
 		}
 	}
 	return 0;
 }
+
